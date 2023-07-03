@@ -240,9 +240,11 @@ router.delete('/experience/:exp_id', passport.authenticate('jwt',{session:false}
 router.delete('/education/:edu_id', passport.authenticate('jwt',{session:false}), async (req, res) => {
     try {
       const foundProfile = await Profile.findOne({ user: req.user.id });
+        console.log(foundProfile)
       foundProfile.education = foundProfile.education.filter(
         (edu) => edu._id.toString() !== req.params.edu_id.toString()
       );
+        console.log(foundProfile)
       await foundProfile.save();
       return res.status(200).json(foundProfile);
     } catch (error) {
