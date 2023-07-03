@@ -241,7 +241,7 @@ router.delete('/education/:edu_id', passport.authenticate('jwt',{session:false})
     try {
       const foundProfile = await Profile.findOne({ user: req.user.id });
       foundProfile.education = foundProfile.education.filter(
-        (edu) => edu._id.toString() !== req.params.edu_id
+        (edu) => edu._id.toString() !== req.params.edu_id.toString()
       );
       await foundProfile.save();
       return res.status(200).json(foundProfile);
