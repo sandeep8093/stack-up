@@ -26,7 +26,7 @@ const ProfileSchema = new Schema({
         required: true
     },
     skills:{
-        type: [String], // will be comma separated values
+        type: Array, // will be comma separated values
         required: true
     },
     bio : {
