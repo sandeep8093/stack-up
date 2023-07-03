@@ -50,7 +50,7 @@ const ProfileSchema = new Schema({
         },
         from: {
           type: Date,
-          required: true
+          // required: true
         },
         to: {
           type: Date // not requried bcz maybe still working on job
