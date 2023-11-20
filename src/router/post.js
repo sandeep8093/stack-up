@@ -38,51 +38,36 @@ router.post('/',passport.authenticate('jwt', {session:false}),async(req,res)=>{
 
 /*
 @route: GET api/posts
-@desc: view all posts
-@access : public
+@desc: view all posts with optional search query
+@access: public
 15.1.20
 */
-router.get('/',async (req,res)=>{
-    try{
-        const posts = await Post.find().sort({date:-1}); //sort descendng order
-        res.json(posts);
-    }
-    catch(err){
-        console.error(err.message);
-        res.status(500).send('Server Error!');
-    }
-})
-
-/*
-@route: GET api/posts/search
-@desc: search all posts based upon search query 
-@access : public
-15.1.20
-*/
-router.get('/search/posts', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        let posts;
-        if (!req.query.query || req.query.query == '') {
-            posts = await Post.find();
-        } else {
-            const query = req.query.query; // Retrieve the query parameter
-            posts = await Post.find().or([
-                { text: { $regex: query, $options: 'i' } },
-                { name: { $regex: query, $options: 'i' } },
-            ]);
+        let query = {};
+
+        // Check if there is a search query in the request
+        if (req.query.search) {
+            const regexQuery = new RegExp(req.query.search, 'i');
+
+            // Update the query to search in multiple fields using $or
+            query = {
+                $or: [
+                    { text: { $regex: regexQuery } },
+                    { name: { $regex: regexQuery } },
+                ],
+            };
         }
 
-        // Check if any posts were found
-        if (!posts || posts.length === 0) {
-            return res.status(404).json({ msg: 'No posts found' });
-        }
-
+        // Fetch posts based on the query
+        const posts = await Post.find(query).sort({ date: -1 }); // sort descending order
         res.json(posts);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send('Server Error!');
     }
 });
+
 
 /*
 @route: GET api/posts/:id
